@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity
 public class FolderEntity extends BaseEntity {
 
+    // Links this entity to a specific UserEntity (foreign key user_id).
+    // Many of these entities can belong to the same user.
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;

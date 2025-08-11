@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
+
 
 @Service
 public class AuthService {
@@ -18,6 +20,9 @@ public class AuthService {
     UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final PasswordEncoder passwordEncoder;
+    private static final Pattern EMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern USERNAME = Pattern.compile("^[a-zA-Z0-9._-]{3,20}$");
+
 
     // Constructor injection
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -35,23 +40,33 @@ public class AuthService {
         List<String> errors = new ArrayList<>();
 
         if (user == null) {
-            throw new UserRegistrationException("User object cannot be null.");
+            throw new UserRegistrationException("Invalid registration request. Please try again.");
         }
 
+        // Username: blank -> error; else validate & normalize
         if (user.getUsername() == null || user.getUsername().isBlank()) {
             errors.add("Username cannot be empty.");
+        } else {
+            if (!isUsername(user.getUsername())) {
+                errors.add("Invalid username format.");
+            }
+            user.setUsername(user.getUsername().trim().toLowerCase());
         }
 
+        // Email: blank -> error; else validate & normalize
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             errors.add("Email cannot be empty.");
+        } else {
+            if (!isEmail(user.getEmail())) {
+                errors.add("Invalid email format.");
+            }
+            user.setEmail(user.getEmail().trim().toLowerCase());
         }
 
+        // Password checks
         if (user.getPassword() == null || user.getPassword().isBlank()) {
             errors.add("Password cannot be empty.");
-        }
-
-        // Only do password checks if password is not null or blank
-        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+        } else {
             String password = user.getPassword();
 
             if (password.length() < 8) {
@@ -76,33 +91,24 @@ public class AuthService {
             }
         }
 
+        // Duplicate checks only when values are present
+        if (user.getUsername() != null && !user.getUsername().isBlank()
+                && userRepository.existsByUsername(user.getUsername())) {
+            errors.add("Username already exists.");
+        }
+
+        if (user.getEmail() != null && !user.getEmail().isBlank()
+                && userRepository.existsByEmail(user.getEmail())) {
+            errors.add("Email already exists.");
+        }
+
         if (!errors.isEmpty()) {
             throw new UserRegistrationException(String.join(" ", errors));
         }
 
-        // Normalize inputs
-        user.setEmail(user.getEmail().trim().toLowerCase());
-        user.setUsername(user.getUsername().trim().toLowerCase());
-
-        // Check for duplicates
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists.");
-        }
-
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists.");
-        }
-
-        // Username validation
-        if (user.getUsername().length() < 3 || user.getUsername().length() > 20) {
-            throw new IllegalArgumentException("Username must contain 3-20 characters.");
-        }
-
-        // Hash the password
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
 
-        // Save the user
         userRepository.save(user);
     }
 
@@ -114,5 +120,14 @@ public class AuthService {
     // Accepts an ID and returns the user if found, or handles if it isn't found
     public Optional<UserEntity> getUserByID(Long id) {
         return userRepository.findById(id);
+    }
+
+
+    private static boolean isEmail(String s) {
+        return EMAIL.matcher(s).matches();
+    }
+
+    private static boolean isUsername(String s) {
+        return USERNAME.matcher(s).matches();
     }
 }
