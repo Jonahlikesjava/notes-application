@@ -23,7 +23,6 @@ public class AuthService {
     private static final Pattern EMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
     private static final Pattern USERNAME = Pattern.compile("^[a-zA-Z0-9._-]{3,20}$");
 
-
     // Constructor injection
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -43,29 +42,36 @@ public class AuthService {
             throw new UserRegistrationException("Invalid registration request. Please try again.");
         }
 
-        // Username: blank -> error; else validate & normalize
+        // Username: trim first, then validate & normalize
         if (user.getUsername() == null || user.getUsername().isBlank()) {
             errors.add("Username cannot be empty.");
+            logger.warn("Username was empty");
         } else {
+            user.setUsername(user.getUsername().trim()); // ✅ Trim first
             if (!isUsername(user.getUsername())) {
                 errors.add("Invalid username format.");
+                logger.warn("Username has invalid format for: {}", user.getUsername());
             }
-            user.setUsername(user.getUsername().trim().toLowerCase());
+            user.setUsername(user.getUsername().toLowerCase()); // ✅ Lowercase after validation
         }
 
-        // Email: blank -> error; else validate & normalize
+        // Email: trim first, then validate & normalize
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             errors.add("Email cannot be empty.");
+            logger.warn("Email was empty.");
         } else {
+            user.setEmail(user.getEmail().trim()); // ✅ Trim first
             if (!isEmail(user.getEmail())) {
                 errors.add("Invalid email format.");
+                logger.warn("Email has invalid format for : {}", user.getEmail());
             }
-            user.setEmail(user.getEmail().trim().toLowerCase());
+            user.setEmail(user.getEmail().toLowerCase()); // ✅ Lowercase after validation
         }
 
         // Password checks
         if (user.getPassword() == null || user.getPassword().isBlank()) {
             errors.add("Password cannot be empty.");
+            logger.warn("Password was empty.");
         } else {
             String password = user.getPassword();
 
@@ -95,14 +101,17 @@ public class AuthService {
         if (user.getUsername() != null && !user.getUsername().isBlank()
                 && userRepository.existsByUsername(user.getUsername())) {
             errors.add("Username already exists.");
+            logger.warn("Username is a duplicate: {}", user.getUsername());
         }
 
         if (user.getEmail() != null && !user.getEmail().isBlank()
                 && userRepository.existsByEmail(user.getEmail())) {
             errors.add("Email already exists.");
+            logger.warn("Email is a duplicate: {}", user.getEmail());
         }
 
         if (!errors.isEmpty()) {
+            logger.error("User registration failed due to errors: {}", errors);
             throw new UserRegistrationException(String.join(" ", errors));
         }
 
@@ -110,6 +119,7 @@ public class AuthService {
         user.setPassword(hashedPassword);
 
         userRepository.save(user);
+        logger.info("User registered successfully: {}", user.getUsername());
     }
 
     // Deletes a user
@@ -121,7 +131,6 @@ public class AuthService {
     public Optional<UserEntity> getUserByID(Long id) {
         return userRepository.findById(id);
     }
-
 
     private static boolean isEmail(String s) {
         return EMAIL.matcher(s).matches();
