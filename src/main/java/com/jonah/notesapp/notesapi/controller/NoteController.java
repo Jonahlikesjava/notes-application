@@ -10,6 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {
+
     private final NoteService noteService;
 
     public NoteController(NoteService noteService) { // Constructor injection
@@ -22,15 +23,23 @@ public class NoteController {
         return noteService.getAllNotes();
     }
 
+    // GET /api/notes/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<NoteEntity> getNoteById(@PathVariable Long id) {
+        return noteService.getNoteById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // POST /api/notes
     @PostMapping
-    public ResponseEntity<String> addNote(@RequestBody NoteEntity note) {
+    public NoteEntity addNote(@RequestBody NoteEntity note) {
         return noteService.saveNote(note);
     }
 
     // PUT /api/notes/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateNote(@RequestBody NoteEntity note) {
+    public NoteEntity updateNote(@RequestBody NoteEntity note) {
         return noteService.updateNote(note);
     }
 

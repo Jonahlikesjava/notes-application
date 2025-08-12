@@ -2,7 +2,6 @@ package com.jonah.notesapp.notesapi.controller;
 
 import com.jonah.notesapp.notesapi.model.UserEntity;
 import com.jonah.notesapp.notesapi.service.UserService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,13 +25,13 @@ public class UserController {
 
     // POST /api/users
     @PostMapping
-    public ResponseEntity<String> addUser(@RequestBody UserEntity user) {
+    public UserEntity addUser(@RequestBody UserEntity user) {
         return userService.saveUser(user);
     }
 
     // PUT /api/users/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@RequestBody UserEntity user) {
+    public UserEntity updateUser(@RequestBody UserEntity user) {
         return userService.saveUser(user);
     }
 

@@ -1,10 +1,7 @@
 package com.jonah.notesapp.notesapi.controller;
 
-import com.jonah.notesapp.notesapi.model.NoteEntity;
 import com.jonah.notesapp.notesapi.model.TagEntity;
-import com.jonah.notesapp.notesapi.service.NoteService;
 import com.jonah.notesapp.notesapi.service.TagService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,13 +23,13 @@ public class TagController {
 
     // POST /api/tags
     @PostMapping
-    public ResponseEntity<String> addTag(@RequestBody TagEntity tag) {
+    public TagEntity addTag(@RequestBody TagEntity tag) {
         return tagService.saveTag(tag);
     }
 
     // PUT /api/tags/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTag(@RequestBody TagEntity tag) {
+    public TagEntity updateTag(@RequestBody TagEntity tag) {
         return tagService.updateTag(tag);
     }
 

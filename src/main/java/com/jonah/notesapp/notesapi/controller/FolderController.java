@@ -2,7 +2,6 @@ package com.jonah.notesapp.notesapi.controller;
 
 import com.jonah.notesapp.notesapi.model.FolderEntity;
 import com.jonah.notesapp.notesapi.service.FolderService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,13 +24,13 @@ public class FolderController {
 
     // POST /api/folders
     @PostMapping
-    public ResponseEntity<String> addFolder(@RequestBody FolderEntity folder) {
+    public FolderEntity addFolder(@RequestBody FolderEntity folder) {
         return folderService.saveFolder(folder);
     }
 
     // PUT /api/folders/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateFolder(@RequestBody FolderEntity folder) {
+    public FolderEntity updateFolder(@RequestBody FolderEntity folder) {
         return folderService.updateFolder(folder);
     }
 
