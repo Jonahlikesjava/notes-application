@@ -47,12 +47,12 @@ public class AuthService {
             errors.add("Username cannot be empty.");
             logger.warn("Username was empty");
         } else {
-            user.setUsername(user.getUsername().trim()); // ✅ Trim first
+            user.setUsername(user.getUsername().trim()); // Trim first
             if (!isUsername(user.getUsername())) {
                 errors.add("Invalid username format.");
                 logger.warn("Username has invalid format for: {}", user.getUsername());
             }
-            user.setUsername(user.getUsername().toLowerCase()); // ✅ Lowercase after validation
+            user.setUsername(user.getUsername().toLowerCase()); // Lowercase after validation
         }
 
         // Email: trim first, then validate & normalize
@@ -60,12 +60,12 @@ public class AuthService {
             errors.add("Email cannot be empty.");
             logger.warn("Email was empty.");
         } else {
-            user.setEmail(user.getEmail().trim()); // ✅ Trim first
+            user.setEmail(user.getEmail().trim()); // Trim first
             if (!isEmail(user.getEmail())) {
                 errors.add("Invalid email format.");
                 logger.warn("Email has invalid format for : {}", user.getEmail());
             }
-            user.setEmail(user.getEmail().toLowerCase()); // ✅ Lowercase after validation
+            user.setEmail(user.getEmail().toLowerCase()); // Lowercase after validation
         }
 
         // Password checks
