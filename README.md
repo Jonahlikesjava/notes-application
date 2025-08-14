@@ -1,2 +1,1 @@
-This is the backend for a note-taking application built with Spring Boot. It includes authentication, user management, and note organization features.
-Source code location: src/main/java/com/jonah/notesapp/notesapi
+This repository is a work in progress as part of my ongoing learning in software development. The code reflects an active build process, and future updates will include improved structure, additional features, and refined documentation.
