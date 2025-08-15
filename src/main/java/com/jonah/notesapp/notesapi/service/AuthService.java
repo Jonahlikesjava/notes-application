@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 public class AuthService {
 
     UserRepository userRepository;
+    private String user;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final PasswordEncoder passwordEncoder;
     private static final Pattern EMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -122,6 +123,7 @@ public class AuthService {
         userRepository.save(user);
         logger.info("User registered successfully: {}", user.getUsername());
     }
+
 
     // Deletes a user
     public void deleteByID(Long id) {
