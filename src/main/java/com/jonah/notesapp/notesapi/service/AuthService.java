@@ -118,6 +118,7 @@ public class AuthService {
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
 
+
         userRepository.save(user);
         logger.info("User registered successfully: {}", user.getUsername());
     }

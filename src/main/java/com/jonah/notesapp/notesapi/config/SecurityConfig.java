@@ -24,15 +24,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(basic -> {})     // ✅ enable HTTP Basic auth
+                .httpBasic(basic -> {})     //  enable HTTP Basic auth
                 .formLogin(form -> form.disable()); // no login page (API style)
 
         return http.build();
     }
 
+    // Loads user details from DB for Spring Security during username/password auth
     @Bean
     public org.springframework.security.core.userdetails.UserDetailsService userDetailsService(UserRepository repo) {
         return username -> repo.findByUsername(username)
+
                 .map(u -> org.springframework.security.core.userdetails.User
                         .withUsername(u.getUsername())
                         .password(u.getPassword()) // already BCrypt-hashed

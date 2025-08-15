@@ -1,11 +1,10 @@
 package com.jonah.notesapp.notesapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import model.base.BaseEntity;
 
+import javax.management.relation.Role;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,10 +12,23 @@ import java.util.Objects;
 public class UserEntity extends BaseEntity {
 
     private String username;
+    public String getId;
     private String email;
     private String password;
-    private String role;
-    private boolean enabled;
+    private String name;
+    private String id;
+
+    // in UserEntity
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+            private List<RoleEntity> roles = new ArrayList<>();
+
+            private boolean enabled;
+
 
     @OneToMany(mappedBy = "user") // A user can have many notes
     private List<NoteEntity> notes;
@@ -28,12 +40,12 @@ public class UserEntity extends BaseEntity {
     // default constructor
     public UserEntity() {}
 
-    // parameterized constructor
-    public UserEntity(String email, String passwordHash, String username, List<NoteEntity> notes) {
-        this.email = email;
-        this.username = username;
-        this.notes = notes;
+    public UserEntity(String name, String password, List<RoleEntity> roles) {
+        this.name = name;
+        this.password = password;
+        this.roles = roles;
     }
+
 
     // Getters and Setters
     public List<NoteEntity> getNotes() {
@@ -68,6 +80,17 @@ public class UserEntity extends BaseEntity {
         this.username = username;
     }
 
+    public List<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleEntity> roles) {
+        this.roles = roles;
+    }
+
+
+
+
     // check if the username is not blank
     public boolean hasUsername() {
         return username != null;
@@ -86,5 +109,13 @@ public class UserEntity extends BaseEntity {
     // Checks if the username and password are both present
     public boolean isValidForLogin() {
         return hasUsername() && hasPassword();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void addRole(RoleEntity role) {
+        this.roles.add(role);
     }
 }
