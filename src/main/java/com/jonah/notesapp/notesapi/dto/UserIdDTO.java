@@ -1,13 +1,13 @@
 package com.jonah.notesapp.notesapi.dto;
 
 public class UserIdDTO {
-    private String id;
+    private final Long id;
 
-    public UserIdDTO(String id) {
+    public UserIdDTO(Long id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 }

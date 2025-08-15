@@ -22,6 +22,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/users").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET,  "/api/users").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> {})     //  enable HTTP Basic auth

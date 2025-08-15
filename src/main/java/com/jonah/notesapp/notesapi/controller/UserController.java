@@ -15,7 +15,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private UserService userService;
@@ -50,6 +50,6 @@ public class UserController {
 
                 userService.save(user);
 
-                return new UserIdDTO(user.getId);
+                return new UserIdDTO(user.getId());
     }
 }

@@ -12,11 +12,9 @@ import java.util.Objects;
 public class UserEntity extends BaseEntity {
 
     private String username;
-    public String getId;
     private String email;
     private String password;
     private String name;
-    private String id;
 
     // in UserEntity
     @ManyToMany
@@ -88,28 +86,6 @@ public class UserEntity extends BaseEntity {
         this.roles = roles;
     }
 
-
-
-
-    // check if the username is not blank
-    public boolean hasUsername() {
-        return username != null;
-    }
-
-    // Checks if the user input matches the username that is stored
-    public boolean isUsernameMatch(String input) {
-        return Objects.equals(username, input);
-    }
-
-    // Ensures the password is present before authentication
-    public boolean hasPassword() {
-        return password != null && !password.isBlank();
-    }
-
-    // Checks if the username and password are both present
-    public boolean isValidForLogin() {
-        return hasUsername() && hasPassword();
-    }
 
     public String getName() {
         return name;

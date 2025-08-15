@@ -4,21 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import model.base.BaseEntity;
 
 @Entity
-public class RoleEntity {
+public class RoleEntity extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     private String name; // Name of the role, i.e, "ADMIN", "USER"
 
 public RoleEntity() {} // No args constructor required by JPA to create entity objects
-
-    public Long getId() {
-    return id;
-    }
 
     public String getName() {
     return name;
