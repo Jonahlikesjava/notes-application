@@ -8,6 +8,7 @@ import com.jonah.notesapp.notesapi.mapper.Mapper;
 import com.jonah.notesapp.notesapi.model.UserEntity;
 import com.jonah.notesapp.notesapi.service.RoleService;
 import com.jonah.notesapp.notesapi.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,21 +17,15 @@ import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    private UserService userService;
-    private RoleService roleService;
-    private Mapper mapper;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final Mapper mapper;
 
-
-    public UserController(UserService userService, RoleService authService, Mapper mapper) {
-        this.userService = userService;
-        this.roleService = authService;
-        this.mapper = mapper;
-    }
 
     @GetMapping
-    @ResponseBody
     public List<UserDTO> getUsers() {
         return userService.getAllUsers()
                 .stream()
@@ -39,7 +34,6 @@ public class UserController {
     }
 
     @PostMapping
-    @ResponseBody
     public UserIdDTO create(@RequestBody UserCreationDTO userDTO) {
         UserEntity user = mapper.toUser(userDTO);
 
