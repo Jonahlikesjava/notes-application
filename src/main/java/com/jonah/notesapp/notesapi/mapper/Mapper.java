@@ -4,8 +4,6 @@ import com.jonah.notesapp.notesapi.dto.UserCreationDTO;
 import com.jonah.notesapp.notesapi.dto.UserDTO;
 import com.jonah.notesapp.notesapi.model.RoleEntity;
 import com.jonah.notesapp.notesapi.model.UserEntity;
-import org.apache.catalina.Role;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -27,6 +25,11 @@ public class Mapper {
     }
 
     public UserEntity toUser(UserCreationDTO userDTO) {
-       return new UserEntity(userDTO.getName(), userDTO.getPassword(), new ArrayList<>());
+        return new UserEntity(
+                userDTO.getName(),
+                userDTO.getPassword(),
+                new ArrayList<>(),
+                userDTO.getEmail()
+        );
     }
 }

@@ -8,7 +8,9 @@ import com.jonah.notesapp.notesapi.mapper.Mapper;
 import com.jonah.notesapp.notesapi.model.UserEntity;
 import com.jonah.notesapp.notesapi.service.RoleService;
 import com.jonah.notesapp.notesapi.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,16 +36,24 @@ public class UserController {
     }
 
     @PostMapping
-    public UserIdDTO create(@RequestBody UserCreationDTO userDTO) {
+    public UserIdDTO create(@RequestBody @Valid UserCreationDTO userDTO) {
         UserEntity user = mapper.toUser(userDTO);
 
         userDTO.getRoles()
                 .stream()
-                .map(role -> roleService.getOrCreate(role))
+                .map(roleService::getOrCreate)
                 .forEach(user::addRole);
 
                 userService.save(user);
 
                 return new UserIdDTO(user.getId());
     }
+    // Delete a user
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        boolean existed = userService.deleteById(id);
+        return existed ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
+
 }

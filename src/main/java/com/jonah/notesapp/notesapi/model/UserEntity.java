@@ -1,9 +1,9 @@
 package com.jonah.notesapp.notesapi.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import model.base.BaseEntity;
-
-import javax.management.relation.Role;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,12 +11,24 @@ import java.util.Objects;
 @Entity
 public class UserEntity extends BaseEntity {
 
+    @Setter
+    @Getter
     private String username;
+
+    @Setter
+    @Getter
     private String email;
+
+    @Setter
+    @Getter
     private String password;
+
+    @Getter
     private String name;
 
     // in UserEntity
+    @Setter
+    @Getter
     @ManyToMany
     @JoinTable(
             name = "user_roles",
@@ -28,6 +40,9 @@ public class UserEntity extends BaseEntity {
             private boolean enabled;
 
 
+    // Getters and Setters
+    @Setter
+    @Getter
     @OneToMany(mappedBy = "user") // A user can have many notes
     private List<NoteEntity> notes;
 
@@ -38,57 +53,11 @@ public class UserEntity extends BaseEntity {
     // default constructor
     public UserEntity() {}
 
-    public UserEntity(String name, String password, List<RoleEntity> roles) {
+    public UserEntity(String name, String password, List<RoleEntity> roles, String email) {
         this.name = name;
         this.password = password;
         this.roles = roles;
-    }
-
-
-    // Getters and Setters
-    public List<NoteEntity> getNotes() {
-        return notes;
-    }
-
-    public void setNotes(List<NoteEntity> notes) {
-        this.notes = notes;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public List<RoleEntity> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<RoleEntity> roles) {
-        this.roles = roles;
-    }
-
-
-    public String getName() {
-        return name;
     }
 
     public void addRole(RoleEntity role) {
