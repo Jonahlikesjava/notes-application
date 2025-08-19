@@ -43,6 +43,9 @@ public class AuthService {
             throw new UserRegistrationException("Invalid registration request. Please try again.");
         }
 
+        user.setDisplayUsername(user.getUsername());
+        user.setDisplayEmail(user.getEmail());
+
         // Username: trim first, then validate & normalize
         if (user.getUsername() == null || user.getUsername().isBlank()) {
             errors.add("Username cannot be empty.");

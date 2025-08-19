@@ -2,34 +2,23 @@ package com.jonah.notesapp.notesapi.dto;
 
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Setter
+@Getter
 public class UserDTO {
 
     private String name;
+    private String username;
     private List<String> roles;
 
     public UserDTO(String name, List<String> roles) {
         this.name = name;
         this.roles = roles;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
-
 
 
 

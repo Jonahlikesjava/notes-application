@@ -1,14 +1,15 @@
 package com.jonah.notesapp.notesapi.model;
 
-import com.jonah.notesapp.notesapi.model.NoteEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
+import lombok.NoArgsConstructor;
 import model.base.BaseEntity;
 
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
 public class TagEntity extends BaseEntity {
 
     @Column(nullable = false)
@@ -16,8 +17,6 @@ public class TagEntity extends BaseEntity {
 
     @ManyToMany(mappedBy = "tags")
     private List<NoteEntity> notes;
-
-    public TagEntity() {}
 
     public TagEntity(String name) {
         this.name = name;

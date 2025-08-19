@@ -1,12 +1,16 @@
 package com.jonah.notesapp.notesapi.config;
 
+import com.jonah.notesapp.notesapi.model.RoleEntity;
 import com.jonah.notesapp.notesapi.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
@@ -21,10 +25,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/users").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(basic -> {})     //  enable HTTP Basic auth
+                .httpBasic(basic -> {
+                })           // enable HTTP Basic auth
                 .formLogin(form -> form.disable()); // no login page (API style)
 
         return http.build();
@@ -32,15 +37,14 @@ public class SecurityConfig {
 
     // Loads user details from DB for Spring Security during username/password auth
     @Bean
-    public org.springframework.security.core.userdetails.UserDetailsService userDetailsService(UserRepository repo) {
-        return username -> repo.findByUsername(username)
-
-                .map(u -> org.springframework.security.core.userdetails.User
-                        .withUsername(u.getUsername())
-                        .password(u.getPassword()) // already BCrypt-hashed
-                        .roles("USER")
+    public UserDetailsService userDetailsService(UserRepository repo) {
+        return login -> repo.findByUsernameIgnoreCaseOrEmailIgnoreCase(login, login)
+                .map(u -> User.withUsername(u.getUsername())
+                        .password(u.getPassword()) // already BCrypt encoded
+                        .roles(u.getRoles().stream().map(RoleEntity::getName).toArray(String[]::new))
                         .build())
-                .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException("Not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + login));
     }
+
 
 }

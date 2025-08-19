@@ -1,18 +1,17 @@
 package com.jonah.notesapp.notesapi.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import lombok.NoArgsConstructor;
 import model.base.BaseEntity;
 
 @Entity
+@NoArgsConstructor
 public class RoleEntity extends BaseEntity {
 
-
+    @jakarta.validation.constraints.NotBlank
+    @jakarta.persistence.Column(nullable = false, unique = true, length = 32)
     private String name; // Name of the role, i.e, "ADMIN", "USER"
 
-public RoleEntity() {} // No args constructor required by JPA to create entity objects
 
     public String getName() {
     return name;
@@ -21,5 +20,6 @@ public RoleEntity() {} // No args constructor required by JPA to create entity o
     public void setName(String name) {
     this.name = name;
     }
+
 
 }

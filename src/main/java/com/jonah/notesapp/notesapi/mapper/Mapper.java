@@ -15,18 +15,21 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class Mapper {
     public UserDTO toDto(UserEntity user) {
-        String name = user.getName();
+        String name = user.getUsername();
         List<String> roles = user
                 .getRoles()
                 .stream()
                 .map(RoleEntity::getName)
                 .collect(toList());
-        return new UserDTO(name, roles);
+
+        UserDTO dto = new UserDTO(name, roles);
+        dto.setUsername((user.getUsername()));
+        return dto;
     }
 
     public UserEntity toUser(UserCreationDTO userDTO) {
         return new UserEntity(
-                userDTO.getName(),
+                userDTO.getUsername(),
                 userDTO.getPassword(),
                 new ArrayList<>(),
                 userDTO.getEmail()
