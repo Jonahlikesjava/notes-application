@@ -35,7 +35,7 @@ public class AuthService {
         return userRepository.findAll();
     }
 
-    // Log in credentials
+    // Register credentials
     public void registerUser(UserEntity user) {
         List<String> errors = new ArrayList<>();
 
