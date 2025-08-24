@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+<div class="container">
+    <div class="wrapper">
+        <div class="title"><span>Login</span></div>
+
+        <form id="loginForm">
+            <div class="row">
+                <input id="login" type="text" placeholder="Username or Email" required>
+            </div>
+            <div class="row">
+                <input id="password" type="password" placeholder="Password" required>
+            </div>
+            <div class="row button">
+                <input type="submit" value="Login">
+            </div>
+        </form>
+
+        <div id="msg" class="msg"></div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('loginForm');
+    const msg  = document.getElementById('msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = '';
+
+      const login    = document.getElementById('login').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ login, password })
+        });
+
+        if (res.ok) {
+          // TODO: handle token or navigate
+          // const data = await res.json();
+          // localStorage.setItem('token', data.accessToken);
+          // window.location.href = '/some-protected-page.html';
+          msg.textContent = 'Login successful.';
+          msg.style.color = '#1b5e20';
+          form.reset();
+        } else {
+          let text = `HTTP ${res.status}`;
+          try {
+            const p = await res.json();
+            text = p.message || p.error || text;
+          } catch {}
+          msg.textContent = text;
+          msg.style.color = '#b71c1c';
+        }
+      } catch {
+        msg.textContent = 'Network error — is the API running?';
+        msg.style.color = '#b71c1c';
+      }
+    });
+</script>
+</body>
+</html>

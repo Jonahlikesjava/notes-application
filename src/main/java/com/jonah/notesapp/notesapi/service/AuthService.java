@@ -1,5 +1,7 @@
 package com.jonah.notesapp.notesapi.service;
 
+import com.jonah.notesapp.notesapi.dto.SignInDTO;
+import com.jonah.notesapp.notesapi.dto.UserCreationDTO;
 import com.jonah.notesapp.notesapi.exception.UserRegistrationException;
 import com.jonah.notesapp.notesapi.model.UserEntity;
 import com.jonah.notesapp.notesapi.repository.UserRepository;
@@ -13,105 +15,90 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-
 @Service
 public class AuthService {
 
-    UserRepository userRepository;
-    private String user;
+    private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final PasswordEncoder passwordEncoder;
     private static final Pattern EMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
     private static final Pattern USERNAME = Pattern.compile("^[a-zA-Z0-9._-]{3,20}$");
 
-    // Constructor injection
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Get all users
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // Register credentials
-    public void registerUser(UserEntity user) {
+    public void registerUser(UserCreationDTO dto) {
         List<String> errors = new ArrayList<>();
 
-        if (user == null) {
+        if (dto == null) {
             throw new UserRegistrationException("Invalid registration request. Please try again.");
         }
 
-        user.setDisplayUsername(user.getUsername());
-        user.setDisplayEmail(user.getEmail());
+        String username = dto.getUsername();
+        String email = dto.getEmail();
+        String name = dto.getName();
+        String rawPassword = dto.getPassword();
 
-        // Username: trim first, then validate & normalize
-        if (user.getUsername() == null || user.getUsername().isBlank()) {
+        if (username == null || username.isBlank()) {
             errors.add("Username cannot be empty.");
             logger.warn("Username was empty");
         } else {
-            user.setUsername(user.getUsername().trim()); // Trim first
-            if (!isUsername(user.getUsername())) {
+            username = username.trim();
+            if (!isUsername(username)) {
                 errors.add("Invalid username format.");
-                logger.warn("Username has invalid format for: {}", user.getUsername());
+                logger.warn("Username has invalid format for: {}", username);
             }
-            user.setUsername(user.getUsername().toLowerCase()); // Lowercase after validation
+            username = username.toLowerCase();
         }
 
-        // Email: trim first, then validate & normalize
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
+        if (email == null || email.isBlank()) {
             errors.add("Email cannot be empty.");
             logger.warn("Email was empty.");
         } else {
-            user.setEmail(user.getEmail().trim()); // Trim first
-            if (!isEmail(user.getEmail())) {
+            email = email.trim();
+            if (!isEmail(email)) {
                 errors.add("Invalid email format.");
-                logger.warn("Email has invalid format for : {}", user.getEmail());
+                logger.warn("Email has invalid format for : {}", email);
             }
-            user.setEmail(user.getEmail().toLowerCase()); // Lowercase after validation
+            email = email.toLowerCase();
         }
 
-        // Password checks
-        if (user.getPassword() == null || user.getPassword().isBlank()) {
+        if (rawPassword == null || rawPassword.isBlank()) {
             errors.add("Password cannot be empty.");
             logger.warn("Password was empty.");
         } else {
-            String password = user.getPassword();
-
-            if (password.length() < 8) {
+            if (rawPassword.length() < 8) {
                 errors.add("Password must be at least 8 characters.");
             }
-
             boolean hasDigit = false;
             boolean hasUpperCase = false;
             boolean hasLowerCase = false;
             boolean hasSpecial = false;
             String specialChars = "!@#$%^&*()_+=-";
-
-            for (char c : password.toCharArray()) {
+            for (char c : rawPassword.toCharArray()) {
                 if (Character.isDigit(c)) hasDigit = true;
                 if (Character.isLowerCase(c)) hasLowerCase = true;
                 if (Character.isUpperCase(c)) hasUpperCase = true;
-                if (specialChars.contains(String.valueOf(c))) hasSpecial = true;
+                if (specialChars.indexOf(c) >= 0) hasSpecial = true;
             }
-
             if (!hasDigit || !hasUpperCase || !hasLowerCase || !hasSpecial) {
                 errors.add("Password must contain uppercase, lowercase, digit, and special character.");
             }
         }
 
-        // Duplicate checks only when values are present
-        if (user.getUsername() != null && !user.getUsername().isBlank()
-                && userRepository.existsByUsername(user.getUsername())) {
+        if (username != null && !username.isBlank() && userRepository.existsByUsername(username)) {
             errors.add("Username already exists.");
-            logger.warn("Username is a duplicate: {}", user.getUsername());
+            logger.warn("Username is a duplicate: {}", username);
         }
-
-        if (user.getEmail() != null && !user.getEmail().isBlank()
-                && userRepository.existsByEmail(user.getEmail())) {
+        if (email != null && !email.isBlank() && userRepository.existsByEmail(email)) {
             errors.add("Email already exists.");
-            logger.warn("Email is a duplicate: {}", user.getEmail());
+            logger.warn("Email is a duplicate: {}", email);
         }
 
         if (!errors.isEmpty()) {
@@ -119,21 +106,47 @@ public class AuthService {
             throw new UserRegistrationException(String.join(" ", errors));
         }
 
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
+        UserEntity entity = new UserEntity();
+        entity.setUsername(username);
+        entity.setEmail(email);
+        entity.setName(name);
+        entity.setDisplayUsername(username);
+        entity.setDisplayEmail(email);
+        entity.setPassword(passwordEncoder.encode(rawPassword));
 
-
-        userRepository.save(user);
-        logger.info("User registered successfully: {}", user.getUsername());
+        userRepository.save(entity);
+        logger.info("User registered successfully: {}", username);
     }
 
+    public void signIn(SignInDTO dto) {
+       if (dto == null || dto.getLogin() == null || dto.getPassword() == null) {
+           throw new UserRegistrationException("Invalid sign-in");
+       }
 
-    // Deletes a user
+       String login = dto.getLogin().trim();
+       String rawPassword = dto.getPassword();
+
+       if (login.isBlank() || rawPassword.isBlank()) {
+           throw new UserRegistrationException("Login and password are required");
+       }
+
+       Optional<UserEntity> userOpt = userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(login, login);
+
+       UserEntity user = userOpt.orElseThrow(() ->
+               new UserRegistrationException("Invalid username/email or password."));
+
+       if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+           throw new UserRegistrationException("Invalid username/email or password");
+       }
+
+        logger.info("User signed in successfully: {}", user.getUsername());
+
+    }
+
     public void deleteByID(Long id) {
         userRepository.deleteById(id);
     }
 
-    // Accepts an ID and returns the user if found, or handles if it isn't found
     public Optional<UserEntity> getUserByID(Long id) {
         return userRepository.findById(id);
     }

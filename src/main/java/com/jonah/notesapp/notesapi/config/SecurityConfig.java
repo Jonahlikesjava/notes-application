@@ -5,6 +5,8 @@ import com.jonah.notesapp.notesapi.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,19 +26,38 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                // Allow JSON auth calls without CSRF (keeps browsers from 403 on POST)
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/auth/**"))
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated()
+                        // PUBLIC static pages & assets (order matters: these first!)
+                        .requestMatchers("/", "/index.html",
+                                "/login.html", "/register.html",
+                                "/css/**", "/js/**", "/images/**").permitAll()
+
+                        // PUBLIC auth APIs
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
+
+                        // PROTECTED pages
+                        .requestMatchers("/home.html").authenticated()
+
+                        .anyRequest().permitAll()
                 )
-                .httpBasic(basic -> {
-                })           // enable HTTP Basic auth
-                .formLogin(form -> form.disable()); // no login page (API style)
+
+                // we’re not using Spring’s form login or HTTP Basic
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable());
 
         return http.build();
     }
+
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+        return cfg.getAuthenticationManager();
+    }
+
+
 
     // Loads user details from DB for Spring Security during username/password auth
     @Bean
