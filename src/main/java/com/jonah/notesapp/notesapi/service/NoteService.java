@@ -31,13 +31,21 @@ public class NoteService {
         return noteRepository.findById(id);
     }
 
-    // Update a note
-    public NoteEntity updateNote(NoteEntity note) {
-        return noteRepository.save(note);
-    }
-
     // Delete a note by id
     public void deleteNoteById(Long id) {
         noteRepository.deleteById(id);
     }
+
+    // Find notes by title
+    public void findNotesByTitle(String title) {
+        noteRepository.findByTitle(title);
+    }
+
+    // Find notes by tag or user
+    public void findNotesByTagOrUserId(String tags, Long userId) {
+        noteRepository.findByTagsOrUserId(tags, userId);
+    }
+
+
+
 }

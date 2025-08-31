@@ -62,6 +62,8 @@
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify({ username, email, password })
         });
+
+        // Redirects user to log in page after successfully registering
         if (res.ok) {
            show('Account created! Redirecting to login…');
            setTimeout(() => window.location.href = '/login.html', 1200);
