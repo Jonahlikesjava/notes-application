@@ -51,6 +51,7 @@
           // window.location.href = '/some-protected-page.html';
           msg.textContent = 'Login successful.';
           msg.style.color = '#1b5e20';
+          window.location.assign('http://localhost:8080/home.html');
           form.reset();
         } else {
           let text = `HTTP ${res.status}`;

@@ -30,19 +30,23 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/auth/**"))
 
                 .authorizeHttpRequests(auth -> auth
-                        // PUBLIC static pages & assets (order matters: these first!)
-                        .requestMatchers("/", "/index.html",
+                        // PUBLIC static pages & assets
+                        .requestMatchers(
+                                "/", "/index.html",
                                 "/login.html", "/register.html",
-                                "/css/**", "/js/**", "/images/**").permitAll()
+                                "/home.html",              // ✅ NEW: added here
+                                "/css/**", "/js/**", "/images/**", "/favicon.ico"
+                        ).permitAll()
 
                         // PUBLIC auth APIs
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
 
-                        // PROTECTED pages
-                        .requestMatchers("/home.html").authenticated()
+                        // PROTECT the APIs (so dashboard JS must log in first)
+                        .requestMatchers("/api/**").authenticated()
 
-                        .anyRequest().permitAll()
+                        .anyRequest().permitAll() // or .authenticated() depending on your design
                 )
+
 
                 // we’re not using Spring’s form login or HTTP Basic
                 .formLogin(form -> form.disable())
