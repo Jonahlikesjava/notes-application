@@ -9,5 +9,6 @@ public interface NoteRepository extends JpaRepository<NoteEntity, Long> {
 
     List<NoteEntity> findByTitle(String title);
 
-    List<NoteEntity> findByTagsOrUserId(String tags, Long userId);
+    List<NoteEntity> findByTags_IdOrUser_Id(Long tagId, Long userId);
+
 }

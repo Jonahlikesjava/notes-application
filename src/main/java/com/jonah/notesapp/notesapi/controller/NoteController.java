@@ -37,9 +37,9 @@ public class NoteController {
         return noteService.saveNote(note);
     }
 
-    @DeleteMapping("/{id")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteANoteById(Long id) {
+    public void deleteANoteById(@PathVariable Long id) {
         noteService.deleteNoteById(id);
     }
 

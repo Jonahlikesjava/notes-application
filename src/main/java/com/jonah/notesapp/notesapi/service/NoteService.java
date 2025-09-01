@@ -41,9 +41,9 @@ public class NoteService {
        return noteRepository.findByTitle(title);
     }
 
-    // Find notes by tag or user
-    public List<NoteEntity> findNotesByTagOrUserId(String tags, Long userId) {
-       return noteRepository.findByTagsOrUserId(tags, userId);
+    // Find notes by tag or user id
+    public List<NoteEntity> findByTags_IdOrUser_Id(Long tagId, Long userId) {
+        return noteRepository.findByTags_IdOrUser_Id(tagId, userId);
     }
 
 
