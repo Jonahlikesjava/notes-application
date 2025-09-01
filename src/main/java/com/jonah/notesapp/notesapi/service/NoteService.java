@@ -37,13 +37,13 @@ public class NoteService {
     }
 
     // Find notes by title
-    public void findNotesByTitle(String title) {
-        noteRepository.findByTitle(title);
+    public  List<NoteEntity> findNotesByTitle(String title) {
+       return noteRepository.findByTitle(title);
     }
 
     // Find notes by tag or user
-    public void findNotesByTagOrUserId(String tags, Long userId) {
-        noteRepository.findByTagsOrUserId(tags, userId);
+    public List<NoteEntity> findNotesByTagOrUserId(String tags, Long userId) {
+       return noteRepository.findByTagsOrUserId(tags, userId);
     }
 
 
