@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", "/index.html",
                                 "/login.html", "/register.html",
-                                "/home.html",              // ✅ NEW: added here
+                                "/dashboard.html",
                                 "/css/**", "/js/**", "/images/**", "/favicon.ico"
                         ).permitAll()
 

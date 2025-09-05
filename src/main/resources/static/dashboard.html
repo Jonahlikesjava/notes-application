@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="/css/dashboard.css?v=1" />
+</head>
+<body>
+<div id="app">
+    <header>
+        <h1>DashBoard</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="#" id="notesBtn">Notes</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div id="content">
+            <input type="text" id="noteTitle" placeholder="Title">
+            <textarea id="noteContent" placeholder="Content"></textarea>
+            <div class="btn">
+                <button id="addBtn" type="button">
+                    <i class="fas fa-plus"></i>
+                    Add Note
+                </button>
+            </div>
+            <div id="main"></div>
+        </div>
+    </main>
+</div>
+
+<script src="https://kit.fontawesome.com/bf520e6492.js" crossorigin="anonymous"></script>
+<script src="js/dashboardscript.js" defer></script>
+</body>
+</html>
